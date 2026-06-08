@@ -10,7 +10,20 @@ with DAG(
 ) as dag:
 
     # Triggers your working python script inside the container via bash
-    task_train = BashOperator(
-        task_id='execute_pyspark_training',
-        bash_command='docker exec mlops_pyspark_workspace python /home/jovyan/work/train.py'
+    #task_train = BashOperator(
+    #    task_id='execute_pyspark_training',
+    #    bash_command='docker exec mlops_pyspark_workspace python /home/jovyan/work/train.py'
+    #)
+
+    task_dvc_pull = BashOperator(
+         task_id='dvc_pull_data',
+         bash_command='docker exec mlops_pyspark_workspace dvc pull'
     )
+
+    task_train = BashOperator(
+         task_id='execute_pyspark_training',
+         bash_command='docker exec mlops_pyspark_workspace python /home/jovyan/work/train.py'
+    )
+
+# Force DVC pull to execute before training starts
+    task_dvc_pull >> task_train
