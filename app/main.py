@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import mlflow.pyfunc
 import numpy as np
+import requests
+from datetime import datetime
 
 app = FastAPI(title="MLOps End-to-End Prediction Service")
 
@@ -38,3 +40,19 @@ def predict_price(data: HouseFeatures):
         "estimated_price_thousands": float(prediction[0])
     }
 
+def send_log_to_kibana(log_message: str, log_level: str = "INFO"):
+    elasticsearch_url = "http://elasticsearch:9200/mlops-application-logs/_doc"
+    payload = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "level": log_level,
+        "message": log_message,
+        "environment": "azure-production-vm"
+    }
+    try:
+        requests.post(elasticsearch_url, json=payload, timeout=2)
+    except Exception as e:
+        print(f"Failed sending log to Elasticsearch: {e}")
+
+# Example Usage inside your train.py or prediction endpoint:
+send_log_to_kibana("Model training started successfully", "INFO")
+send_log_to_kibana("Model version 2.8.1 registered to MLflow", "SUCCESS")

@@ -3,7 +3,7 @@ FROM python:3.10-slim
 WORKDIR /code
 
 # Install core dependencies
-RUN pip install --no-cache-dir fastapi uvicorn "mlflow==2.8.1" scikit-learn numpy azure-storage-blob azure-identity
+RUN pip install --no-cache-dir fastapi uvicorn "mlflow==2.8.1" scikit-learn numpy azure-storage-blob azure-identity requests
 
 COPY ./main.py /code/main.py
 
