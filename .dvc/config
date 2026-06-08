@@ -1,0 +1,8 @@
+[core]
+    no_scm = True
+    remote = myremote
+[cache]
+    dir = /home/azureuser/dvc-cache
+['remote "myremote"']
+    url = azure://mlops-artifacts/dvc-data
+    account_name = mlopsdatastoragerajesh

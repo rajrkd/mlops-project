@@ -1,0 +1,4 @@
+data/raw/sample_dataset.csv
+
+.dvc/config.local
+.dvc/tmp/

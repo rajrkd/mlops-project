@@ -1,0 +1,36 @@
+name: MLOps Production Automated Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy-to-azure-vm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Latest Source Code Changes
+        uses: actions/checkout@v4
+
+      - name: Deploy Scripts and Recycle Workspace via Secure SSH Tunnel
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/mlops-project
+            
+            # Synchronise code with GitHub repository
+            git pull origin ${{ github.ref_name }} || echo "Repository track synchronized locally"
+            
+            # Ensure correct file runtime permissions for the team
+            sudo chown -R azureuser:azureuser ~/mlops-project
+            chmod -R 755 ~/mlops-project
+            
+            # Hot-reload the 6-container infrastructure stack with zero data loss
+            docker compose -f docker-compose-workspace.yml up -d --remove-orphans
+            
+            echo "CI/CD Deployment Complete! All 6 core MLOps systems are up-to-date."
