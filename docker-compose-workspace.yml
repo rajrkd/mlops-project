@@ -127,6 +127,13 @@ services:
     depends_on:
       - elasticsearch
 
+  #9 FastApi
+  api:
+    build: ./app
+    ports:
+      - "8000:8000"
+    restart: always
+
 volumes:
   mlflow_metadata:
   airflow_db_volume:
